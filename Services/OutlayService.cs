@@ -136,6 +136,37 @@ namespace RefundManager.Services
         }
 
 
+        public async Task<List<DaySummaryOutputDto>> GetDaySummaryAsync(DateOnly date, Guid? employeeId, string? department)
+        {
+            var outlays = _context.Outlays.AsNoTracking();
+            if (employeeId.HasValue)
+            {
+                outlays = outlays.Where(o => o.EmployeeId == employeeId.Value);
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                outlays = outlays.Where(o => o.Employee.Department == department);
+            }
+
+            outlays = outlays.Where(o => o.Date == date); // filtro per data singola
+
+            var summaryOutlaysList = await outlays
+                .GroupBy(o => o.Category.Name)
+                .Select(g => new DaySummaryOutputDto
+                {
+                    CategoryName = g.Key,
+                    OutlayAmount = g.Sum(o => o.Amount),
+                    RefundAmount = g.Sum(o => o.Refund != null && o.Refund.Approved ? o.Refund.Amount : 0),
+                })
+                .OrderByDescending(d => d.OutlayAmount)
+                .ToListAsync();
+
+            return summaryOutlaysList;
+
+        }
+
+
         public async Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayInputDto)
         {
             var outlay = new Outlay

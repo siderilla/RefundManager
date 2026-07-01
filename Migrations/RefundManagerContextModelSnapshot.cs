@@ -57,6 +57,10 @@ namespace RefundManager.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("Department")
+                        .HasColumnType("character varying")
+                        .HasColumnName("department");
+
                     b.Property<string>("Mail")
                         .IsRequired()
                         .HasColumnType("character varying")

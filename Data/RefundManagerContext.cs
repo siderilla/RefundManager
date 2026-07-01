@@ -66,6 +66,9 @@ public partial class RefundManagerContext : DbContext
             entity.Property(e => e.Surname)
                 .HasColumnType("character varying")
                 .HasColumnName("surname");
+            entity.Property(e => e.Department)
+                .HasColumnType("character varying")
+                .HasColumnName("department");
         });
 
         modelBuilder.Entity<Outlay>(entity =>

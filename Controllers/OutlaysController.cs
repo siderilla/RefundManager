@@ -53,17 +53,28 @@ namespace RefundManager.Controllers
             return Ok(summary);
         }
 
+        // GET: api/Outlays/day-summary
+        [HttpGet("day-summary")]
+        public async Task<ActionResult<List<DaySummaryOutputDto>>> GetDaySummaryAsync(
+            [FromQuery] DateOnly date,
+            [FromQuery] Guid? employeeId,
+            [FromQuery] string? department)
+        {
+            var summary = await _outlayService.GetDaySummaryAsync(date, employeeId, department);
+            return Ok(summary);
+        }
+
         // POST: api/Outlays/from-employee
         [HttpPost("from-employee")]
         public async Task<ActionResult<Outlay>> PostOutlayByEmployee(Guid employeeId, [FromBody] OutlayInputDto outlay)
         {
-                var newOutlay = await _outlayService.CreateOutlayFromEmployee(employeeId, outlay);
+            var newOutlay = await _outlayService.CreateOutlayFromEmployee(employeeId, outlay);
 
-                return Ok(new
-                {
-                    Message = "Nuova richiesta rimborso inoltrata",
-                    Outlay = newOutlay,
-                });
+            return Ok(new
+            {
+                Message = "Nuova richiesta rimborso inoltrata",
+                Outlay = newOutlay,
+            });
         }
     }
 }

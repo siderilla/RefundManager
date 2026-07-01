@@ -12,6 +12,7 @@ namespace RefundManager.Interfaces
         Task<List<CategoryBudgetSummaryDto>> GetBudgetSummaryAsync(Guid employeeId, int? month = null, int? year = null);
         Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayDto);
         Task<List<OutlaySummaryOutputDto>> GetCalendarSummaryAsync(Guid? employeeId, int month, int year, string? department);
+        Task<List<DaySummaryOutputDto>> GetDaySummaryAsync(DateOnly date, Guid? employeeId, string? department);
 
     }
 }
