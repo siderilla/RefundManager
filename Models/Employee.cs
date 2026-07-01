@@ -17,5 +17,7 @@ public partial class Employee
 
     public string Role { get; set; } = null!;
 
+    public string? Department { get; set; } = null!;
+
     public virtual ICollection<Outlay> Outlays { get; set; } = new List<Outlay>();
 }

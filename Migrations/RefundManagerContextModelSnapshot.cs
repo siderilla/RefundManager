@@ -30,9 +30,13 @@ namespace RefundManager.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<decimal>("Budget")
+                    b.Property<decimal>("DailyBudget")
                         .HasColumnType("numeric")
-                        .HasColumnName("budget");
+                        .HasColumnName("dailyBudget");
+
+                    b.Property<decimal>("MonthlyBudget")
+                        .HasColumnType("numeric")
+                        .HasColumnName("monthlyBudget");
 
                     b.Property<string>("Name")
                         .IsRequired()

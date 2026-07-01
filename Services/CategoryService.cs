@@ -23,26 +23,33 @@ namespace RefundManager.Services
                 {
                     Id = c.Id,
                     Name = c.Name,
-                    BudgetAmount = c.Budget
+                    DailyBudget = c.DailyBudget,
+                    MonthlyBudget = c.MonthlyBudget
                 })
                 .ToListAsync();
 
             return categoryList;
         }
 
-        public async Task<Category> CreateCategoryAsync(CategoryInputDto categoryInputDto)
+        public async Task<CategoryOutputDto> CreateCategoryAsync(CategoryInputDto categoryInputDto)
         {
             var category = new Category
             {
-                Id = Guid.NewGuid(),
                 Name = categoryInputDto.Name,
-                Budget = categoryInputDto.Budget
+                DailyBudget = categoryInputDto.DailyBudget,
+                MonthlyBudget= categoryInputDto.MonthlyBudget
             };
 
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            return category;
+            return new CategoryOutputDto
+            {
+                Id = category.Id,
+                Name = category.Name,
+                DailyBudget = category.DailyBudget,
+                MonthlyBudget = category.MonthlyBudget
+            };
         }
 
     }

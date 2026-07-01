@@ -39,42 +39,127 @@ namespace RefundManager.Services
                 .Include(o => o.Category)
                 .FirstOrDefaultAsync(o => o.Id == outlayId);
 
-            var validatedOutlays = await _context.Outlays
+            var outlaysOfTheMonth = await _context.Outlays
                 .AsNoTracking()
-                .Where(vo => vo.EmployeeId == lastOutlay.EmployeeId
-                    && vo.Date.Month == lastOutlay.Date.Month
-                    && vo.Date.Year == lastOutlay.Date.Year
-                    && vo.CategoryId == lastOutlay.CategoryId
-                    && vo.Refund.Approved == true)
+                .Where(om => om.EmployeeId == lastOutlay.EmployeeId
+                    && om.Date.Month == lastOutlay.Date.Month
+                    && om.Date.Year == lastOutlay.Date.Year
+                    && om.CategoryId == lastOutlay.CategoryId
+                    && om.Refund.Approved == true)
                 .ToListAsync();
 
-            var totalAmount = validatedOutlays.Sum(v => v.Amount);
-            var monthlyBudget = lastOutlay.Category.Budget;
-            var difference = monthlyBudget - totalAmount;
+            var outlaysOfTheDay = await _context.Outlays
+                .AsNoTracking()
+                .Where(od => od.EmployeeId == lastOutlay.EmployeeId
+                    && od.Date == lastOutlay.Date
+                    && od.CategoryId == lastOutlay.CategoryId
+                    && od.Refund.Approved == true)
+                .ToListAsync();
+
+            var totalMonthlyAmount = outlaysOfTheMonth.Sum(v => v.Amount);
+            var totalDailyAmount = outlaysOfTheDay.Sum(v => v.Amount);
+
+            var monthlyBudget = lastOutlay.Category.MonthlyBudget;
+            var dailyBudget = lastOutlay.Category.DailyBudget;
+
+            var monthlyDifference = monthlyBudget - totalMonthlyAmount;
+            var dailyDifference = dailyBudget - totalDailyAmount;
 
             decimal amountToRefund = 0;
+            decimal[] amounts = { lastOutlay.Amount, monthlyDifference, dailyDifference };
 
             if (!isApproved)
             {
                 amountToRefund = 0;
             }
-            else if (difference >= lastOutlay.Amount)
-            {
-                amountToRefund = lastOutlay.Amount;
-            }
-            else if (lastOutlay.Amount > difference && difference >= 0)
-            {
-                amountToRefund = difference;
-            }
             else
             {
-                amountToRefund = 0;
+                amountToRefund = Math.Max(0, amounts.Min());
             }
 
             if (isAutomaticTrigger && amountToRefund == 0)
             {
                 return null;
             }
+
+            //var lastOutlay = await _context.Outlays
+            //    .AsNoTracking()
+            //    .Include(o => o.Category)
+            //    .FirstOrDefaultAsync(o => o.Id == outlayId);
+
+            //var validatedOutlays = await _context.Outlays
+            //    .AsNoTracking()
+            //    .Where(vo => vo.EmployeeId == lastOutlay.EmployeeId
+            //        && vo.Date.Month == lastOutlay.Date.Month
+            //        && vo.Date.Year == lastOutlay.Date.Year
+            //        && vo.CategoryId == lastOutlay.CategoryId
+            //        && vo.Refund.Approved == true)
+            //    .ToListAsync();
+
+            //var totalAmount = validatedOutlays.Sum(v => v.Amount);
+            //var monthlyBudget = lastOutlay.Category.MonthlyBudget;
+            //var difference = monthlyBudget - totalAmount;
+
+            //decimal amountToRefund = 0;
+
+            //var lastOutlay = await _context.Outlays
+            //    .AsNoTracking()
+            //    .Include(o => o.Category)
+            //    .FirstOrDefaultAsync(o => o.Id == outlayId);
+
+            //var outlaysOfTheMonth = await _context.Outlays
+            //    .AsNoTracking()
+            //    .Where(om => om.EmployeeId == lastOutlay.EmployeeId
+            //        && om.Date.Month == lastOutlay.Date.Month
+            //        && om.Date.Year == lastOutlay.Date.Year
+            //        && om.CategoryId == lastOutlay.CategoryId
+            //        && om.Refund.Approved == true)
+            //    .ToListAsync();
+
+            //var outlaysOfTheDay = await _context.Outlays
+            //    .AsNoTracking()
+            //    .Where(od => od.EmployeeId == lastOutlay.EmployeeId
+            //        && od.Date == lastOutlay.Date
+            //        && od.CategoryId == lastOutlay.CategoryId
+            //        && od.Refund.Approved == true)
+            //    .ToListAsync();
+
+            //var totalMonthlyAmount = outlaysOfTheMonth.Sum(v => v.Amount);
+            //var totalDailyAmount = outlaysOfTheDay.Sum(v => v.Amount);
+
+            //var monthlyBudget = lastOutlay.Category.MonthlyBudget;
+            //var dailyBudget = lastOutlay.Category.DailyBudget;
+
+            //var monthlyDifference = monthlyBudget - totalMonthlyAmount;
+            //var dailyDifference = dailyBudget - totalDailyAmount;
+
+            //decimal amountToRefund = 0;
+
+            //if (!isApproved)
+            //{
+            //    amountToRefund = 0;
+            //}
+            //else if (dailyDifference >= lastOutlay.Amount)
+            //{
+            //    amountToRefund = lastOutlay.Amount;
+            //}
+            //else if (monthlyDifference >= lastOutlay.Amount)
+            //{
+            //    amountToRefund = lastOutlay.Amount;
+            //}
+            //else if (lastOutlay.Amount > monthlyDifference && monthlyDifference >= 0)
+            //{
+            //    amountToRefund = monthlyDifference;
+            //}
+            //else
+            //{
+            //    amountToRefund = 0;
+            //}
+
+            //if (isAutomaticTrigger && amountToRefund == 0)
+            //{
+            //    return null;
+            //}
 
             var newRefund = new Refund
             {

@@ -7,10 +7,11 @@ namespace RefundManager.Interfaces
     public interface IOutlayService
     {
 
-        Task<List<OutlayOutputDto>> GetOutlaysByStatus([FromQuery] string? status, Guid hrEmployeeId);
+        Task<List<OutlayOutputDto>> GetOutlaysByStatus(string[]? statuses, Guid hrEmployeeId);
         Task<List<OutlayOutputDto>> GetAllEmployeeOutlays(Guid employeeId);
-        Task<Outlay> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayDto);
-
+        Task<List<CategoryBudgetSummaryDto>> GetBudgetSummaryAsync(Guid employeeId, int? month = null, int? year = null);
+        Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayDto);
+        Task<List<OutlaySummaryOutputDto>> GetCalendarSummaryAsync(Guid? employeeId, int month, int year, string? department);
 
     }
 }

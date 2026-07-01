@@ -8,7 +8,7 @@ namespace RefundManager.Interfaces
 
         Task<List<EmployeeOutputDto>> GetAllEmployees();
         Task<EmployeeOutputDto> GetEmployeeByName(string name, string surname);
-        Task<Employee> CreateEmployeeAsync(EmployeeInputDto employeeInputDto);
+        Task<EmployeeOutputDto> CreateEmployeeAsync(EmployeeInputDto employeeInputDto);
 
     }
 }

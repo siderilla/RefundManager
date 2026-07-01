@@ -27,7 +27,7 @@ namespace RefundManager.Controllers
 
         // GET: api/Categories/with-budget
         [HttpGet("with-budget")]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategoriesWithBudget()
+        public async Task<ActionResult<IEnumerable<CategoryOutputDto>>> GetCategoriesWithBudget()
         {
             var allCatWithBudgets = await _categoryService.GetAllCategoriesWithBudget();
             return Ok(allCatWithBudgets);

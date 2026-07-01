@@ -15,6 +15,8 @@
 
         public string Status { get; set; } = null!;
         public decimal? RefundedAmount { get; set; }
+
+        public decimal DailyBudget { get; set; }
         public decimal MonthlyBudget { get; set; }
 
 

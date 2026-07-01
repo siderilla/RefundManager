@@ -53,7 +53,7 @@ namespace RefundManager.Services
         }
 
 
-        public async Task<Employee> CreateEmployeeAsync(EmployeeInputDto employeeInputDto)
+        public async Task<EmployeeOutputDto> CreateEmployeeAsync(EmployeeInputDto employeeInputDto)
         {
             var employee = new Employee
             {
@@ -68,7 +68,14 @@ namespace RefundManager.Services
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            return employee;
+            return new EmployeeOutputDto
+            {
+                Id = employee.Id,
+                EmployeeFullName = $"{employee.Name} {employee.Surname}",
+                Mail = employee.Mail,
+                Phone = employee.Phone,
+                Role = employee.Role
+            };
         }
     }
 }

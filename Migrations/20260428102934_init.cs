@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RefundManager.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +16,9 @@ namespace RefundManager.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
-                    budget = table.Column<decimal>(type: "numeric", nullable: false),
-                    name = table.Column<string>(type: "character varying", nullable: false)
+                    name = table.Column<string>(type: "character varying", nullable: false),
+                    dailyBudget = table.Column<decimal>(type: "numeric", nullable: false),
+                    monthlyBudget = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {

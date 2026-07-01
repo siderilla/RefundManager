@@ -12,8 +12,8 @@ using RefundManager.Data;
 namespace RefundManager.Migrations
 {
     [DbContext(typeof(RefundManagerContext))]
-    [Migration("20260325103703_first")]
-    partial class first
+    [Migration("20260428102934_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,9 +33,13 @@ namespace RefundManager.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<decimal>("Budget")
+                    b.Property<decimal>("DailyBudget")
                         .HasColumnType("numeric")
-                        .HasColumnName("budget");
+                        .HasColumnName("dailyBudget");
+
+                    b.Property<decimal>("MonthlyBudget")
+                        .HasColumnType("numeric")
+                        .HasColumnName("monthlyBudget");
 
                     b.Property<string>("Name")
                         .IsRequired()
