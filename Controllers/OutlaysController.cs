@@ -18,9 +18,9 @@ namespace RefundManager.Controllers
 
         // GET: api/Outlays/by-status
         [HttpGet("by-status")]
-        public async Task<ActionResult<IEnumerable<OutlayOutputDto>>> GetOutlaysByStatus([FromQuery] string? status, Guid hrEmployeeId)
+        public async Task<ActionResult<IEnumerable<OutlayOutputDto>>> GetOutlaysByStatus([FromQuery] string[]? statuses, Guid hrEmployeeId)
         {
-            return await _outlayService.GetOutlaysByStatus(status, hrEmployeeId);
+            return await _outlayService.GetOutlaysByStatus(statuses, hrEmployeeId);
         }
 
         // GET: api/Outlays/by-employeeId
@@ -28,6 +28,29 @@ namespace RefundManager.Controllers
         public async Task<ActionResult<IEnumerable<OutlayOutputDto>>> GetAllEmployeeOutlays(Guid employeeId)
         {
             return await _outlayService.GetAllEmployeeOutlays(employeeId);
+        }
+
+        // GET: api/Outlays/budget-summary
+        [HttpGet("budget-summary")]
+        public async Task<ActionResult<List<CategoryBudgetSummaryDto>>> GetBudgetSummary(
+            [FromQuery] Guid employeeId,
+            [FromQuery] int? month = null,
+            [FromQuery] int? year = null)
+        {
+            var summary = await _outlayService.GetBudgetSummaryAsync(employeeId, month, year);
+            return Ok(summary);
+        }
+
+        // GET: api/Outlays/calendar-summary
+        [HttpGet("calendar-summary")]
+        public async Task<ActionResult<List<OutlaySummaryOutputDto>>> GetCalendarSummaryAsync(
+            [FromQuery] Guid? employeeId,
+            [FromQuery] int month,
+            [FromQuery] int year,
+            [FromQuery] string? department)
+        {
+            var summary = await _outlayService.GetCalendarSummaryAsync(employeeId, month, year, department);
+            return Ok(summary);
         }
 
         // POST: api/Outlays/from-employee

@@ -35,7 +35,8 @@ public partial class RefundManagerContext : DbContext
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("id");
-            entity.Property(e => e.Budget).HasColumnName("budget");
+            entity.Property(e => e.MonthlyBudget).HasColumnName("monthlyBudget");
+            entity.Property(e => e.DailyBudget).HasColumnName("dailyBudget");
             entity.Property(e => e.Name)
                 .HasColumnType("character varying")
                 .HasColumnName("name");

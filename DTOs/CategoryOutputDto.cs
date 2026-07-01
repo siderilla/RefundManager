@@ -6,7 +6,9 @@ namespace RefundManager.DTOs
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public decimal BudgetAmount { get; set; }
+
+        public decimal DailyBudget { get; set; }
+        public decimal MonthlyBudget { get; set; }
 
     }
 }
