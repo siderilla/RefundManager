@@ -62,7 +62,8 @@ namespace RefundManager.Services
                 Surname = employeeInputDto.Surname,
                 Mail = employeeInputDto.Mail,
                 Phone = employeeInputDto.Phone,
-                Role = employeeInputDto.Role
+                Role = employeeInputDto.Role,
+                Department = employeeInputDto.Department
             };
 
             _context.Employees.Add(employee);

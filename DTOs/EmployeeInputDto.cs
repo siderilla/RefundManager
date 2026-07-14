@@ -14,5 +14,7 @@ namespace RefundManager.DTOs
 
         public string Role { get; set; } = null!;
 
+        public string? Department { get; set; } = null!;
+
     }
 }
