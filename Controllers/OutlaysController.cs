@@ -23,11 +23,27 @@ namespace RefundManager.Controllers
             return await _outlayService.GetOutlaysByStatus(statuses, hrEmployeeId);
         }
 
+        //// GET: api/Outlays/by-employeeId
+        //[HttpGet("by-employeeId")]
+        //public async Task<ActionResult<IEnumerable<OutlayOutputDto>>> GetAllEmployeeOutlays(Guid employeeId)
+        //{
+        //    return await _outlayService.GetAllEmployeeOutlays(employeeId);
+        //}
+
         // GET: api/Outlays/by-employeeId
         [HttpGet("by-employeeId")]
         public async Task<ActionResult<IEnumerable<OutlayOutputDto>>> GetAllEmployeeOutlays(Guid employeeId)
         {
-            return await _outlayService.GetAllEmployeeOutlays(employeeId);
+            return await _outlayService.GetOutlaysAsync(employeeId);
+        }
+
+        // GET: api/Outlays/by-date
+        [HttpGet("by-date")]
+        public async Task<ActionResult<IEnumerable<OutlayOutputDto>>> GetOutlaysByDate(
+            [FromQuery] DateOnly date,
+            [FromQuery] string? department)
+        {
+            return await _outlayService.GetOutlaysAsync(null, date, department);
         }
 
         // GET: api/Outlays/budget-summary

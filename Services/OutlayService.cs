@@ -53,15 +53,25 @@ namespace RefundManager.Services
         .ToListAsync();
         }
 
-        public async Task<List<OutlayOutputDto>> GetAllEmployeeOutlays(Guid employeeId)
+        public async Task<List<OutlayOutputDto>> GetOutlaysAsync(Guid? employeeId = null, DateOnly? date = null, string? department = null)
         {
-            var employeeOutalysList = await _context.Outlays
-                .AsNoTracking()
-                .Where(o => o.EmployeeId == employeeId)
+            var outlays = _context.Outlays.AsNoTracking();
+
+            if (employeeId.HasValue)
+                outlays = outlays.Where(o => o.EmployeeId == employeeId.Value);
+
+            if (date.HasValue)
+                outlays = outlays.Where(o => o.Date == date.Value);
+
+            if (!string.IsNullOrEmpty(department))
+                outlays = outlays.Where(o => o.Employee.Department == department);
+
+            return await outlays
                 .Select(eo => new OutlayOutputDto
                 {
                     Id = eo.Id,
                     CategoryName = eo.Category.Name,
+                    EmployeeFullName = eo.Employee.Name + " " + eo.Employee.Surname,
                     Amount = eo.Amount,
                     Receipt = eo.Receipt,
                     Date = eo.Date,
@@ -72,9 +82,30 @@ namespace RefundManager.Services
                     DailyBudget = eo.Category.DailyBudget
                 })
                 .ToListAsync();
-
-            return employeeOutalysList;
         }
+
+        //public async Task<List<OutlayOutputDto>> GetAllEmployeeOutlays(Guid employeeId)
+        //{
+        //    var employeeOutalysList = await _context.Outlays
+        //        .AsNoTracking()
+        //        .Where(o => o.EmployeeId == employeeId)
+        //        .Select(eo => new OutlayOutputDto
+        //        {
+        //            Id = eo.Id,
+        //            CategoryName = eo.Category.Name,
+        //            Amount = eo.Amount,
+        //            Receipt = eo.Receipt,
+        //            Date = eo.Date,
+        //            Description = eo.Description,
+        //            Status = eo.Refund == null ? "In attesa" : (eo.Refund.Approved ? "Approvata" : "Rifiutata"),
+        //            RefundedAmount = eo.Refund != null ? eo.Refund.Amount : null,
+        //            MonthlyBudget = eo.Category.MonthlyBudget,
+        //            DailyBudget = eo.Category.DailyBudget
+        //        })
+        //        .ToListAsync();
+
+        //    return employeeOutalysList;
+        //}
 
         public async Task<List<CategoryBudgetSummaryDto>> GetBudgetSummaryAsync(Guid employeeId, int? month = null, int? year = null)
         {
@@ -165,6 +196,8 @@ namespace RefundManager.Services
             return summaryOutlaysList;
 
         }
+
+
 
 
         public async Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayInputDto)

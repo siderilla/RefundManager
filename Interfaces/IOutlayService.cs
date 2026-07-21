@@ -8,7 +8,8 @@ namespace RefundManager.Interfaces
     {
 
         Task<List<OutlayOutputDto>> GetOutlaysByStatus(string[]? statuses, Guid hrEmployeeId);
-        Task<List<OutlayOutputDto>> GetAllEmployeeOutlays(Guid employeeId);
+        //Task<List<OutlayOutputDto>> GetAllEmployeeOutlays(Guid employeeId);
+        Task<List<OutlayOutputDto>> GetOutlaysAsync(Guid? employeeId = null, DateOnly? date = null, string? department = null);
         Task<List<CategoryBudgetSummaryDto>> GetBudgetSummaryAsync(Guid employeeId, int? month = null, int? year = null);
         Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayDto);
         Task<List<OutlaySummaryOutputDto>> GetCalendarSummaryAsync(Guid? employeeId, int month, int year, string? department);
