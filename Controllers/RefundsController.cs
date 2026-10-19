@@ -31,5 +31,18 @@ namespace RefundManager.Controllers
             return await _refundsService.GetAllRefundsAsync();
         }
 
+        // POST: api/Refunds/process
+        [HttpPost("process")]
+        public async Task<ActionResult<Refund>> ProcessRefund(Guid outlayId, bool isApproved)
+        {
+            var refund = await _refundsService.ProcessRefundAsync(outlayId, isApproved);
+
+            return Ok(new
+            {
+                Message = isApproved ? "Rimborso approvato" : "Rimborso rifiutato",
+                Refund = refund,
+            });
+        }
+
     }
 }
