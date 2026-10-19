@@ -5,7 +5,7 @@ using RefundManager.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-var cs = builder.Configuration.GetConnectionString("Postgres");
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<RefundManagerContext>(opt =>
 opt.UseNpgsql(cs));
