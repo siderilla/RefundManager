@@ -39,7 +39,7 @@ namespace RefundManager.Controllers
 
             return Ok(new
             {
-                Message = isApproved ? "Rimborso approvato" : "Rimborso rifiutato",
+                Message = isApproved ? "Refund approved" : "Refund rejected",
                 Refund = refund,
             });
         }

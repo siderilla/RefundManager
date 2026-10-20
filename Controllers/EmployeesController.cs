@@ -48,7 +48,7 @@ namespace RefundManager.Controllers
 
             return Ok(new
             {
-                Message = "Dipendente aggiunto",
+                Message = "Employee added",
                 Employee = newEmployee,
             });
         }

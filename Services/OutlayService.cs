@@ -29,9 +29,9 @@ namespace RefundManager.Services
             if (statuses != null && statuses.Any())
             {
                 outlaysByStatuses = outlaysByStatuses.Where(o =>
-                    (statuses.Contains("In attesa") && o.Refund == null) ||
-                    (statuses.Contains("Approvata") && o.Refund != null && o.Refund.Approved == true) ||
-                    (statuses.Contains("Rifiutata") && o.Refund != null && o.Refund.Approved == false)
+                    (statuses.Contains("Pending") && o.Refund == null) ||
+                    (statuses.Contains("Approved") && o.Refund != null && o.Refund.Approved == true) ||
+                    (statuses.Contains("Rejected") && o.Refund != null && o.Refund.Approved == false)
                 );
             }
 
@@ -45,7 +45,7 @@ namespace RefundManager.Services
             Receipt = o.Receipt,
             Date = o.Date,
             Description = o.Description,
-            Status = o.Refund == null ? "In attesa" : (o.Refund.Approved ? "Approvata" : "Rifiutata"),
+            Status = o.Refund == null ? "Pending" : (o.Refund.Approved ? "Approved" : "Rejected"),
             RefundedAmount = o.Refund != null ? o.Refund.Amount : null,
             MonthlyBudget = o.Category.MonthlyBudget,
             DailyBudget = o.Category.DailyBudget
@@ -76,7 +76,7 @@ namespace RefundManager.Services
                     Receipt = eo.Receipt,
                     Date = eo.Date,
                     Description = eo.Description,
-                    Status = eo.Refund == null ? "In attesa" : (eo.Refund.Approved ? "Approvata" : "Rifiutata"),
+                    Status = eo.Refund == null ? "Pending" : (eo.Refund.Approved ? "Approved" : "Rejected"),
                     RefundedAmount = eo.Refund != null ? eo.Refund.Amount : null,
                     MonthlyBudget = eo.Category.MonthlyBudget,
                     DailyBudget = eo.Category.DailyBudget
@@ -97,7 +97,7 @@ namespace RefundManager.Services
         //            Receipt = eo.Receipt,
         //            Date = eo.Date,
         //            Description = eo.Description,
-        //            Status = eo.Refund == null ? "In attesa" : (eo.Refund.Approved ? "Approvata" : "Rifiutata"),
+        //            Status = eo.Refund == null ? "Pending" : (eo.Refund.Approved ? "Approved" : "Rejected"),
         //            RefundedAmount = eo.Refund != null ? eo.Refund.Amount : null,
         //            MonthlyBudget = eo.Category.MonthlyBudget,
         //            DailyBudget = eo.Category.DailyBudget
@@ -118,7 +118,7 @@ namespace RefundManager.Services
 
             var categories = await _context.Categories.ToListAsync();
 
-            // Prendiamo le spese approvate nel mese scelto
+            // Get the approved expenses for the chosen month
             var monthlyOutlays = await _context.Outlays
                 .Where(o => o.EmployeeId == employeeId
                        && o.Date >= firstDay && o.Date <= lastDay
@@ -141,24 +141,24 @@ namespace RefundManager.Services
             var outlays = _context.Outlays.AsNoTracking();
             if (employeeId.HasValue)
             {
-                outlays = outlays.Where(o => o.EmployeeId == employeeId.Value); // filtrare
+                outlays = outlays.Where(o => o.EmployeeId == employeeId.Value); // filter
             }
 
-            // FILTRO AGGIUNTO: quando HR filtra per dipartimento
+            // ADDED FILTER: when HR filters by department
             if (!string.IsNullOrEmpty(department))
             {
-                outlays = outlays.Where(o => o.Employee.Department == department); // ok perché Outlay include l'entità Employee
+                outlays = outlays.Where(o => o.Employee.Department == department); // ok because Outlay includes the Employee entity
             }
 
             outlays = outlays.Where(o => o.Date.Month == month && o.Date.Year == year);
 
             var summaryOutlaysList = await outlays
-                .GroupBy(o => o.Date) // raggruppare
-                .Select(g => new OutlaySummaryOutputDto // mappare + sommare
+                .GroupBy(o => o.Date) // group
+                .Select(g => new OutlaySummaryOutputDto // map + sum
                 {
                     Date = g.Key,
                     OutlayAmount = g.Sum(o => o.Amount),
-                    RefundAmount = g.Sum(o => o.Refund != null && o.Refund.Approved ? o.Refund.Amount : 0), // prima controllo che il rimborso esiste e poi se è approvato
+                    RefundAmount = g.Sum(o => o.Refund != null && o.Refund.Approved ? o.Refund.Amount : 0), // first check the refund exists, then whether it's approved
                 })
                 .OrderBy(d => d.Date)
                 .ToListAsync();
@@ -180,7 +180,7 @@ namespace RefundManager.Services
                 outlays = outlays.Where(o => o.Employee.Department == department);
             }
 
-            outlays = outlays.Where(o => o.Date == date); // filtro per data singola
+            outlays = outlays.Where(o => o.Date == date); // filter by single date
 
             var summaryOutlaysList = await outlays
                 .GroupBy(o => o.Category.Name)
@@ -217,7 +217,7 @@ namespace RefundManager.Services
             await _context.SaveChangesAsync();
             await _refundService.ProcessRefundAsync(outlay.Id, true, true);
 
-            // LAZI LOADING! bisogna ricaricare quei dati, perché dopo il salvataggio sono null: 
+            // LAZY LOADING! need to reload this data, because right after saving it's null:
             var outlayData = await _context.Outlays
                 .Include(o => o.Category)
                 .Include(o => o.Employee)
@@ -233,7 +233,7 @@ namespace RefundManager.Services
                 Receipt = outlayData.Receipt,
                 Date = outlayData.Date,
                 Description = outlayData.Description,
-                Status = outlayData.Refund == null ? "In attesa" : (outlayData.Refund.Approved ? "Approvata" : "Rifiutata"),
+                Status = outlayData.Refund == null ? "Pending" : (outlayData.Refund.Approved ? "Approved" : "Rejected"),
                 RefundedAmount = outlayData.Refund?.Amount,
                 DailyBudget = outlayData.Category.DailyBudget,
                 MonthlyBudget = outlayData.Category.MonthlyBudget

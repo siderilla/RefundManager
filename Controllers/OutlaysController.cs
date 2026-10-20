@@ -88,7 +88,7 @@ namespace RefundManager.Controllers
 
             return Ok(new
             {
-                Message = "Nuova richiesta rimborso inoltrata",
+                Message = "New refund request submitted",
                 Outlay = newOutlay,
             });
         }

@@ -41,7 +41,7 @@ namespace RefundManager.Controllers
 
             return Ok(new
             {
-                Message = "Nuova categoria aggiunta",
+                Message = "New category added",
                 Category = newCategory,
             });
         }

@@ -74,7 +74,7 @@ namespace RefundManager.Services
             }
             else if (!isAutomaticTrigger)
             {
-                // approvazione manuale HR: rimborsa l'intero importo richiesto, anche oltre il tetto di budget
+                // manual HR approval: refunds the full requested amount, even above the budget cap
                 amountToRefund = lastOutlay.Amount;
             }
             else
