@@ -72,6 +72,11 @@ namespace RefundManager.Services
             {
                 amountToRefund = 0;
             }
+            else if (!isAutomaticTrigger)
+            {
+                // approvazione manuale HR: rimborsa l'intero importo richiesto, anche oltre il tetto di budget
+                amountToRefund = lastOutlay.Amount;
+            }
             else
             {
                 amountToRefund = Math.Max(0, amounts.Min());
