@@ -26,7 +26,7 @@ dotnet ef database update
 dotnet run --launch-profile https
 ```
 
-Swagger UI at `/swagger`. CORS is scoped to `http://localhost:4200`, so it's meant to run alongside the [Angular frontend](https://github.com/siderilla/refund-manager).
+Swagger UI at `/swagger`. CORS defaults to `http://localhost:4200` (see `Cors:AllowedOrigins` in `appsettings.json`), so it's meant to run alongside the [Angular frontend](https://github.com/siderilla/refund-manager) locally. When deploying, override it with an environment variable instead of editing the code, e.g. `Cors__AllowedOrigins__0=https://your-deployed-frontend.example.com`.
 
 You'll also need a JWT signing key, set the same way (never committed to `appsettings.json`):
 
