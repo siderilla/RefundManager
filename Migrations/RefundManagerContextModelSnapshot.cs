@@ -71,6 +71,9 @@ namespace RefundManager.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("name");
 
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasColumnType("character varying")

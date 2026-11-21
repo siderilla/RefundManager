@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RefundManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RefundsController : ControllerBase
     {
         private readonly IRefundService _refundsService;
@@ -33,9 +35,15 @@ namespace RefundManager.Controllers
 
         // POST: api/Refunds/process
         [HttpPost("process")]
+        [Authorize(Roles = "HR Manager")]
         public async Task<ActionResult<Refund>> ProcessRefund(Guid outlayId, bool isApproved)
         {
             var refund = await _refundsService.ProcessRefundAsync(outlayId, isApproved);
+
+            if (refund == null)
+            {
+                return NotFound("Outlay not found");
+            }
 
             return Ok(new
             {

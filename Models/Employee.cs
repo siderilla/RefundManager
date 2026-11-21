@@ -19,5 +19,7 @@ public partial class Employee
 
     public string? Department { get; set; } = null!;
 
+    public string? PasswordHash { get; set; }
+
     public virtual ICollection<Outlay> Outlays { get; set; } = new List<Outlay>();
 }

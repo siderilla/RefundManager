@@ -7,7 +7,7 @@ namespace RefundManager.Interfaces
     {
         Task<List<RefundOutputDto>> GetAllRefundsAsync();
 
-        Task<Refund> ProcessRefundAsync(Guid outlayId, bool isApproved, bool isAutomaticTrigger = false);
+        Task<Refund?> ProcessRefundAsync(Guid outlayId, bool isApproved, bool isAutomaticTrigger = false);
 
     }
 }

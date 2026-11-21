@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RefundManager.DTOs;
 using RefundManager.Interfaces;
 using RefundManager.Models;
+using System.Security.Claims;
 
 namespace RefundManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OutlaysController : ControllerBase
     {
         private readonly IOutlayService _outlayService;
@@ -82,9 +85,15 @@ namespace RefundManager.Controllers
 
         // POST: api/Outlays/from-employee
         [HttpPost("from-employee")]
-        public async Task<ActionResult<Outlay>> PostOutlayByEmployee(Guid employeeId, [FromBody] OutlayInputDto outlay)
+        public async Task<ActionResult<Outlay>> PostOutlayByEmployee([FromBody] OutlayInputDto outlay)
         {
+            var employeeId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             var newOutlay = await _outlayService.CreateOutlayFromEmployee(employeeId, outlay);
+
+            if (newOutlay == null)
+            {
+                return NotFound("Employee or category not found");
+            }
 
             return Ok(new
             {

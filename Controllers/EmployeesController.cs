@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RefundManager.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -42,6 +44,7 @@ namespace RefundManager.Controllers
 
         // POST: api/Employees
         [HttpPost]
+        [Authorize(Roles = "HR Manager")]
         public async Task<ActionResult<Employee>> CreateEmployeeAsync([FromBody] EmployeeInputDto employeeInputDto)
         {
             var newEmployee = await _employeeService.CreateEmployeeAsync(employeeInputDto);

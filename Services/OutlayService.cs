@@ -200,8 +200,16 @@ namespace RefundManager.Services
 
 
 
-        public async Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayInputDto)
+        public async Task<OutlayOutputDto?> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayInputDto)
         {
+            var employeeExists = await _context.Employees.AnyAsync(e => e.Id == employeeId);
+            var categoryExists = await _context.Categories.AnyAsync(c => c.Id == outlayInputDto.CategoryId);
+
+            if (!employeeExists || !categoryExists)
+            {
+                return null;
+            }
+
             var outlay = new Outlay
             {
                 Id = Guid.NewGuid(),

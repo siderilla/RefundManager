@@ -11,7 +11,7 @@ namespace RefundManager.Interfaces
         //Task<List<OutlayOutputDto>> GetAllEmployeeOutlays(Guid employeeId);
         Task<List<OutlayOutputDto>> GetOutlaysAsync(Guid? employeeId = null, DateOnly? date = null, string? department = null);
         Task<List<CategoryBudgetSummaryDto>> GetBudgetSummaryAsync(Guid employeeId, int? month = null, int? year = null);
-        Task<OutlayOutputDto> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayDto);
+        Task<OutlayOutputDto?> CreateOutlayFromEmployee(Guid employeeId, OutlayInputDto outlayDto);
         Task<List<OutlaySummaryOutputDto>> GetCalendarSummaryAsync(Guid? employeeId, int month, int year, string? department);
         Task<List<DaySummaryOutputDto>> GetDaySummaryAsync(DateOnly date, Guid? employeeId, string? department);
 

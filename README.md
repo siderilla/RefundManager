@@ -16,16 +16,32 @@ Set your own local connection string with User Secrets instead of hardcoding it:
 
 ```bash
 dotnet user-secrets init
-dotnet user-secrets set "ConnectionStrings:Postgres" "Host=localhost;Port=5432;Database=refundmanager;Username=...;Password=..."
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=refundmanager;Username=...;Password=..."
 ```
 
 Then apply the migrations and start the API:
 
 ```bash
 dotnet ef database update
-dotnet run
+dotnet run --launch-profile https
 ```
 
 Swagger UI at `/swagger`. CORS is scoped to `http://localhost:4200`, so it's meant to run alongside the [Angular frontend](https://github.com/siderilla/refund-manager).
+
+You'll also need a JWT signing key, set the same way (never committed to `appsettings.json`):
+
+```bash
+dotnet user-secrets set "Jwt:Key" "$(openssl rand -base64 48)"
+dotnet user-secrets set "Jwt:Issuer" "RefundManager"
+dotnet user-secrets set "Jwt:Audience" "RefundManagerClient"
+```
+
+# Try the demo
+
+The 4 seed employees all share the same password: **`Demo2026!`**. In `Development`, the API auto-assigns it to any employee row with no password set yet, on every startup — so it keeps working even after restoring the database from scratch. Log in from the [frontend](https://github.com/siderilla/refund-manager) with any of their name/surname pairs (see `employee` table) + that password. The one with the `HR Manager` role can approve/reject refund requests; the others can't (`403` if they try).
+
+# Security scope
+
+Real password hashing (`PasswordHasher<Employee>`, PBKDF2 under the hood) + JWT bearer auth + server-side role checks on the two sensitive actions (refund approval, creating employees). Deliberately **not** implemented, as a scoping choice for a portfolio project rather than an oversight: login rate-limiting/lockout, 2FA, refresh-token rotation, password complexity rules, audit logging. A real production deployment handling real financial data would need those.
 
 Enjoy ⋆｡°✩

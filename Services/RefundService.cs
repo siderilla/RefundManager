@@ -32,12 +32,17 @@ namespace RefundManager.Services
             return refundList;
         }
 
-        public async Task<Refund> ProcessRefundAsync(Guid outlayId, bool isApproved, bool isAutomaticTrigger = false)
+        public async Task<Refund?> ProcessRefundAsync(Guid outlayId, bool isApproved, bool isAutomaticTrigger = false)
         {
             var lastOutlay = await _context.Outlays
                 .AsNoTracking()
                 .Include(o => o.Category)
                 .FirstOrDefaultAsync(o => o.Id == outlayId);
+
+            if (lastOutlay == null)
+            {
+                return null;
+            }
 
             var outlaysOfTheMonth = await _context.Outlays
                 .AsNoTracking()
