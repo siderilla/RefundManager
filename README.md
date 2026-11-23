@@ -6,7 +6,7 @@ Handles employees, categories, outlays and refund requests, with endpoints for b
 
 # Made with
 
-- ASP.NET Core 8 (Web API) + Entity Framework Core
+- ASP.NET Core 10 (Web API) + Entity Framework Core
 - PostgreSQL via Npgsql
 - Swagger / OpenAPI for exploring the endpoints
 
