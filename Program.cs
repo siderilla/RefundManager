@@ -53,29 +53,32 @@ builder.Services
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+// Apply pending EF Core migrations on startup. There's no shell access on the
+// deploy target to run `dotnet ef database update` by hand, so the app has to
+// bring the schema up to date itself on boot.
+using (var migrationScope = app.Services.CreateScope())
+{
+    migrationScope.ServiceProvider.GetRequiredService<RefundManagerContext>().Database.Migrate();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
 
-    // Demo-only: make sure every seed employee has a usable password, so the
-    // README's shared demo credential ("Demo2026!") always works after a fresh db restore.
-    using (var scope = app.Services.CreateScope())
-    {
-        var context = scope.ServiceProvider.GetRequiredService<RefundManagerContext>();
-        var hasher = scope.ServiceProvider.GetRequiredService<PasswordHasher<Employee>>();
-
-        var employeesWithoutPassword = context.Employees.Where(e => e.PasswordHash == null).ToList();
-        foreach (var employee in employeesWithoutPassword)
-        {
-            employee.PasswordHash = hasher.HashPassword(employee, "Demo2026!");
-        }
-
-        if (employeesWithoutPassword.Count > 0)
-        {
-            context.SaveChanges();
-        }
-    }
+// Off by default so a local `dotnet run` never touches your own test data.
+// Set SeedDemoData=true (as an env var) only on the public deploy, where it
+// keeps the demo employees/categories/password seeded and regenerates the
+// outlay/refund rows on every restart so the dashboard's calendar always has
+// something in the current month.
+if (builder.Configuration.GetValue<bool>("SeedDemoData"))
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<RefundManagerContext>();
+    var hasher = scope.ServiceProvider.GetRequiredService<PasswordHasher<Employee>>();
+    DemoDataSeeder.Seed(context, hasher);
 }
 
 app.UseCors();
